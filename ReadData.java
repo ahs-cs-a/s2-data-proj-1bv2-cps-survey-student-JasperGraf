@@ -5,7 +5,7 @@ import java.io.File;
 public class ReadData{
     //I hard-coded the number of rows and columns so 
     //I could use a 2D array
-    private double[][] data = new double[...][...];
+    private double[][] data = new double[21908][14];
 
     //This should read in the csv file and store the data in a 2D array,
     //data -- don't forget to skip the header line and parse everything
@@ -18,7 +18,9 @@ public class ReadData{
             while(scanner.hasNextLine()){
                 String line = scanner.nextLine();
                 String[] lineArr = line.split(",");
-                ...
+                for (int col = 0; col < lineArr.length; col++) {
+                    data[row][col] = Double.parseDouble(lineArr[col]);
+                }
                 row++;
             }
             scanner.close();
@@ -35,8 +37,11 @@ public class ReadData{
     //this should return a double array of the column
     //of data
     public double[][] getColumns(int col1, int col2){
-        double[][] columns = ...
-        ...
+        double[][] columns = new double[2][data[0].length];
+        for(int j = 0; j < data[0].length; j++){
+            columns[0][j] = data[j][col1];
+            columns[1][j] = data[j][col2];
+        }
         return columns;
     }
 
@@ -52,9 +57,21 @@ public class ReadData{
     //for the x column and y column
     public double[] stdDeviation(double[][] xy){
         double sum = 0;
-        double[] mean = ...
-        ...
-        return .. //sample variance!
+        double[] mean = mean(xy);
+        double[] variance = new double[xy[0].length];
+            for (int j = 0; j < xy[0].length; j++) {
+                double sumOfSquares = 0;
+                for (int i = 0; i < xy.length; i++) {
+                    sumOfSquares += Math.pow(xy[i][j] - mean[j], 2);
+                }   
+                variance[j] = sumOfSquares / (xy.length - 1);
+            }
+
+        double[] stdDev = new double[xy[0].length];
+        for (int j = 0; j < xy[0].length; j++) {
+            stdDev[j] = Math.sqrt(variance[j]);
+        }
+        return stdDev;
     }
     
     //this returns the mean of each columns of data passed in
@@ -62,18 +79,31 @@ public class ReadData{
     //of values
     public double[] mean(double[][] xy){
         double sum = 0;
-        ...
-        return ...;
+        double[] sums = new double[xy[0].length];
+        int col = xy[0].length;
+        for(int j = 0; j < col;j++){
+            int num = 0;
+            for(int i = 0; i < xy.length; i++){
+                sums[j] += xy[j][i];
+                num++;
+            }
+            sums[j] /= num;
+        }
+        return sums;
     }
 
     //this returns the values of each column in standard units
     //the standard units are the value minus the mean divided by the standard deviation
     //this should return a double 2D array of the standard units
     public double[][] standardUnits(double[][] xy){
-        double[][] stdArr = ...
-        double[] stdDeviation = ...;
-        double[] mean = ...;
-        ...
+        double[][] stdArr = new double[xy[0].length][];
+        double[] stdDeviation = stdDeviation(xy);
+        double[] mean = mean(xy);
+        for(int j = 1; j < xy[0].length; j++){
+            for(int i = 0; i < xy.length; i++){
+                stdArr[j][i] = (xy[j][i] - mean) / stdDeviation;
+            }
+        }
         return stdArr;
     }
     
